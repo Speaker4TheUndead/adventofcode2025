@@ -12,3 +12,8 @@ pom.xml.asc
 .lein-failures
 .nrepl-port
 .cpcache/
+inputs/input1.txt
+inputs/input2.txt
+inputs/input3.txt
+/.clj-kondo/
+/.lsp/
