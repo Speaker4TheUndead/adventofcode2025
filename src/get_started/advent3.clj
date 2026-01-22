@@ -5,49 +5,57 @@
 
 (def formatted_input (str/split-lines rawinput))
 
-(defn top-2v [coll] 
-  (let [d1 (apply max (subvec coll 0 (- (count coll) 1))) 
+(defn top-2v [coll]
+  (let [d1 (apply max (subvec coll 0 (- (count coll) 1)))
         d2 (apply max (subvec coll (inc (.indexOf coll d1))))]
-    [d1 d2])
-  )
+    [d1 d2]))
 
 (defn make-ddnum [[d1 d2]]
-  (+ (* d1 10) d2)
-  )
+  (+ (* d1 10) d2))
 
 (defn get-top-two-digits-and-make-dd-num [coll]
-  (make-ddnum (top-2v coll))
-  )
+  (make-ddnum (top-2v coll)))
 
 (->>
  (mapv #(str/split % #"") formatted_input)
- (mapv (fn [x] (mapv #(parse-long %) x)) )
- (mapv #(get-top-two-digits-and-make-dd-num %) )
- (apply + )
- )
+ (mapv (fn [x] (mapv #(parse-long %) x)))
+ (mapv #(get-top-two-digits-and-make-dd-num %))
+ (apply +))
 
 ;;;; Part two
 
+(defn make-num [coll]
+ (loop [coll coll
+        pow (- (count coll) 1)
+        sum 0]
+   (if (empty? coll)
+     (long sum)
+     (recur (rest coll) (dec pow) (+ sum (* (first coll) (math/pow 10 pow)))))))
 
-(defn top-12v [coll] 
-  (loop [digits [(apply max (subvec coll 0 (- (count coll) 12)))]
-         coll (subvec digits (.indexOf coll (peek digits)))]
+(defn top-12v [coll]
+  (loop [coll coll
+         digits []]
     (if (= (count digits) 12)
       digits
-      (let [next_digit (apply max (subvec coll (inc (.indexOf coll (peek digits)))))
-            coll (subvec digits (.indexOf coll (peek digits)))]
-        (recur (conj digits next_digit) coll))
+      (let [len (count coll)
+            remainingdcount (dec (- 12 (count digits)))
+            d (apply max (subvec coll 0 (- len remainingdcount))) 
+            nextcoll (subvec coll (inc (.indexOf coll d)))]
+        (recur nextcoll (conj digits d))
+        )
       )
     )
   )
+        
 
 (defn get-top-twelve-digits-and-make-12d-num [coll]
-  (make-ddnum (top-12v coll)))
-(top-12v [8 1 8 1 8 1 9 1 1 1 1 2 1 1 1])
+  (make-num (top-12v coll)))
+
 (->>
  (mapv #(str/split % #"") formatted_input)
  (mapv (fn [x] (mapv #(parse-long %) x)))
  (mapv #(get-top-twelve-digits-and-make-12d-num %))
  (apply +))
+ 
 
 
